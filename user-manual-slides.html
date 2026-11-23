@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>คู่มือการใช้งาน — Dumbbell Only App (Interactive Slides)</title>
+  <style>
+    :root {
+      --bg: #F5F5F7;
+      --card: #FFFFFF;
+      --ink: #1D1D1F;
+      --muted: #6E6E73;
+      --blue: #0071E3;
+      --green: #34C759;
+      --orange: #FF9500;
+      --border: rgba(0, 0, 0, 0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Sukhumvit Set", "Noto Sans Thai", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    header.deck-bar {
+      height: 56px;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 10;
+    }
+    .deck-title { font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; }
+    .deck-controls { display: flex; align-items: center; gap: 10px; }
+    .nav-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--ink);
+      transition: all 0.15s ease;
+    }
+    .nav-btn:hover { background: #E8E8ED; }
+    .nav-btn.primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+    .nav-btn.primary:hover { opacity: 0.9; }
+    .slide-counter { font-size: 0.85rem; font-weight: 600; color: var(--muted); min-width: 60px; text-align: center; }
+
+    .progress-track { height: 3px; background: rgba(0,0,0,0.06); width: 100%; }
+    .progress-fill { height: 100%; background: var(--blue); transition: width 0.25s ease; }
+
+    main.stage {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      overflow: hidden;
+    }
+    .slide {
+      display: none;
+      width: 100%;
+      max-width: 1120px;
+      height: 100%;
+      max-height: 680px;
+      background: var(--card);
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.06);
+      padding: 36px 42px;
+      overflow-y: auto;
+      animation: fadeIn 0.25s ease;
+    }
+    .slide.active { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 32px; align-items: center; }
+    .slide.cover.active { grid-template-columns: 1fr; text-align: center; justify-items: center; align-content: center; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .badge {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      background: rgba(0,113,227,0.1);
+      color: var(--blue);
+      margin-bottom: 12px;
+    }
+    h1 { font-size: 2.4rem; line-height: 1.2; margin-bottom: 14px; letter-spacing: -0.02em; }
+    h2 { font-size: 1.75rem; line-height: 1.25; margin-bottom: 14px; letter-spacing: -0.015em; }
+    p.lead { font-size: 1.05rem; color: var(--muted); line-height: 1.6; max-width: 680px; }
+
+    .step-list { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+    .step-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      background: var(--bg);
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+    .step-num {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: var(--blue); color: #fff;
+      font-size: 0.8rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .step-text strong { display: block; font-size: 0.95rem; margin-bottom: 2px; }
+    .step-text span { font-size: 0.86rem; color: var(--muted); line-height: 1.45; }
+
+    .device-frame {
+      width: 100%;
+      height: 520px;
+      border-radius: 22px;
+      border: 6px solid #1D1D1F;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+      position: relative;
+    }
+    .device-frame iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    .frame-caption {
+      position: absolute;
+      bottom: 8px;
+      right: 10px;
+      background: rgba(29,29,31,0.78);
+      color: #fff;
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      pointer-events: none;
+    }
+
+    @media (max-width: 860px) {
+      .slide.active { grid-template-columns: 1fr; padding: 24px; }
+      .device-frame { height: 340px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="deck-bar">
+    <div class="deck-title">🏋️‍♂️ คู่มือการใช้งาน Dumbbell Only App</div>
+    <div class="deck-controls">
+      <button class="nav-btn" onclick="prevSlide()">← ก่อนหน้า</button>
+      <span class="slide-counter" id="slideCounter">1 / 6</span>
+      <button class="nav-btn primary" onclick="nextSlide()">ถัดไป →</button>
+    </div>
+  </header>
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width: 16.6%;"></div></div>
+
+  <main class="stage">
+    <!-- SLIDE 1: COVER -->
+    <section class="slide cover active">
+      <span class="badge">USER MANUAL &amp; QUICK START GUIDE</span>
+      <h1>Dumbbell Only<br>Training &amp; Energy Bento</h1>
+      <p class="lead">คู่มือการใช้งานแอปออกกำลังกายด้วยดัมเบลและติดตามโภชนาการอัจฉริยะแบบครบวงจร<br>กดปุ่ม <strong>ถัดไป →</strong> หรือใช้ปุ่มลูกศรบนคีย์บอร์ดเพื่อดูขั้นตอนการใช้งานจริง</p>
+      <div style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+        <button class="nav-btn primary" style="padding: 10px 24px; font-size: 0.95rem;" onclick="nextSlide()">เริ่มอ่านคู่มือ →</button>
+        <a href="index.html" target="_blank" class="nav-btn" style="text-decoration:none; padding: 10px 24px; font-size: 0.95rem;">เปิดแอปเต็มจอ ↗</a>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: DASHBOARD -->
+    <section class="slide">
+      <div>
+        <span class="badge">SLIDE 2 • หน้าหลัก (TODAY DASHBOARD)</span>
+        <h2>ภาพรวมพลังงานและเป้าหมายรายวัน</h2>
+        <p class="lead">หน้าแรกสรุปทุกอย่างที่ต้องรู้ในวันเดียว ทั้งแคลอรี่ที่กินได้, โปรตีนเป้าหมาย และสถานะการฝึก</p>
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-text">
+              <strong>วงแหวนพลังงาน (Energy Ring)</strong>
+              <span>ดูแคลอรี่ที่กินไปแล้วเทียบกับเป้าหมายรายวัน พร้อมแคลอรี่คงเหลือแบบเรียลไทม์</span>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-text">
+              <strong>สารอาหารหลัก (Macros: P / C / F)</strong>
+              <span>ติดตามโปรตีน คาร์โบไฮเดรต และไขมัน แยกสีชัดเจนเพื่อคุมรูปร่างให้ตรงเป้า</span>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-text">
+              <strong>ปุ่มลัดเข้าสู่โหมดฝึก &amp; สแกนอาหาร</strong>
+              <span>กดปุ่มลัดบนการ์ดเพื่อกระโดดไปบันทึกมื้ออาหารหรือเริ่มฝึกได้ทันที</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="device-frame">
+        <iframe src="index.html" title="Live App Dashboard"></iframe>
+        <div class="frame-caption">หน้าจอแอปจริง (เลื่อน/กดทดสอบได้)</div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: WORKOUT & REST TIMER -->
+    <section class="slide">
+      <div>
+        <span class="badge">SLIDE 3 • โหมดฝึกซ้อม (WORKOUT &amp; REST TIMER)</span>
+        <h2>บันทึกเซตฝึก &amp; ตัวจับเวลาพักเซตอัตโนมัติ</h2>
+        <p class="lead">ออกแบบมาเพื่อการเล่นดัมเบลโดยเฉพาะ พร้อมตัวช่วยคุมเวลาพักระหว่างเซต</p>
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-text">
+              <strong>เลือกตารางฝึกประจำวัน</strong>
+              <span>สลับวันฝึก (เช่น Push / Pull / Legs / Full Body) ระบบจะแสดงท่าดัมเบลที่ต้องเล่นในวันนั้น</span>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-text">
+              <strong>กรอกน้ำหนัก (kg) &amp; จำนวนครั้ง (Reps)</strong>
+              <span>บันทึกน้ำหนักที่ใช้จริงในแต่ละเซต แล้วกดติ๊กถูกเมื่อเล่นจบเซต</span>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-text">
+              <strong>Rest Timer อัจฉริยะ (+15วิ / -15วิ / เสียงเตือน)</strong>
+              <span>แถบจับเวลาด้านบนจะเริ่มนับถอยหลังอัตโนมัติ กด <strong>-15วิ / +15วิ</strong> ปรับเวลาได้ทันที และมีเสียง+สั่นเตือนเมื่อครบเวลา</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="device-frame">
+        <iframe src="index.html#workout" title="Live App Workout"></iframe>
+        <div class="frame-caption">หน้าจอแอปจริง • แถบจับเวลาด้านบน</div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: NUTRITION & INGREDIENTS -->
+    <section class="slide">
+      <div>
+        <span class="badge">SLIDE 4 • โภชนาการ (AI SCAN + วัตถุดิบ)</span>
+        <h2>บันทึกอาหารได้ทั้งถ่ายรูป พิมพ์ชื่อ และใส่วัตถุดิบ</h2>
+        <p class="lead">รองรับทั้งการสแกนด้วย Gemini AI และการคำนวณทันทีแบบไม่ต้องใช้รูปภาพ</p>
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-text">
+              <strong>ถ่ายรูปอาหาร (AI Scan)</strong>
+              <span>อัปโหลดรูปอาหารแล้วกด <em>"ให้ AI คำนวณแคลอรี่"</em> ระบบจะแยกวัตถุดิบและสารอาหารให้อัตโนมัติ</span>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-text">
+              <strong>เลือกวัตถุดิบด่วน หรือพิมพ์เพิ่มเอง</strong>
+              <span>กดปุ่มวัตถุดิบ (+ อกไก่, + ไข่ไก่, + แซลมอน, + ข้าวโอ๊ต ฯลฯ) หรือพิมพ์ชื่อวัตถุดิบ/เมนูอาหารเอง</span>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-text">
+              <strong>คำนวณแคลอรี่ทันที (ไม่ต้องใช้รูป)</strong>
+              <span>กดปุ่มสีเขียว <strong>"คำนวณจากชื่อ/วัตถุดิบ (ไม่ต้องใช้รูป)"</strong> ระบบจะประเมิน kcal / P / C / F ให้แก้ไขและบันทึกได้ทันที</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="device-frame">
+        <iframe src="index.html#nutrition" title="Live App Nutrition"></iframe>
+        <div class="frame-caption">หน้าจอแอปจริง • โหมดอาหารและวัตถุดิบ</div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: PROGRESS & CARDIO -->
+    <section class="slide">
+      <div>
+        <span class="badge">SLIDE 5 • คาร์ดิโอ &amp; ความก้าวหน้า</span>
+        <h2>ติดตามคาร์ดิโอ น้ำหนักตัว และสถิติ</h2>
+        <p class="lead">เห็นพัฒนาการของตัวเองอย่างชัดเจน ทั้งการเผาผลาญและแนวโน้มน้ำหนักตัว</p>
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-text">
+              <strong>บันทึกคาร์ดิโอ (Cardio Rounds)</strong>
+              <span>ติ๊กจำนวนรอบที่ทำได้ หรือระบุเวลา/แคลอรี่ที่เผาผลาญเพิ่มในแต่ละวัน</span>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-text">
+              <strong>บันทึกน้ำหนักตัว &amp; สัดส่วน</strong>
+              <span>อัปเดตน้ำหนักตัวรายวันเพื่อดูแนวโน้มการลดไขมันหรือเพิ่มกล้ามเนื้อ</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="device-frame">
+        <iframe src="index.html#progress" title="Live App Progress"></iframe>
+        <div class="frame-caption">หน้าจอแอปจริง • สถิติและความก้าวหน้า</div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: API KEY & SETTINGS -->
+    <section class="slide">
+      <div>
+        <span class="badge">SLIDE 6 • การตั้งค่า API KEY &amp; SYNC</span>
+        <h2>ตั้งค่า Gemini API Key อย่างปลอดภัย</h2>
+        <p class="lead">เข้าใจระบบจัดเก็บ Key ฝั่ง Server และฝั่งเครื่อง เพื่อใช้งาน AI ได้อย่างต่อเนื่อง</p>
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-text">
+              <strong>Server Key (`ScriptProperties`)</strong>
+              <span>เมื่อบันทึก Key ผ่านระบบ Google Apps Script ตัว Key จะถูกเก็บอย่างปลอดภัยบน Server และไม่ส่งค่าดิบกลับมาโชว์บนหน้าเว็บ</span>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-text">
+              <strong>Local Key (`localStorage`)</strong>
+              <span>หากเปิดแอปแบบไฟล์ในเครื่อง สามารถวาง Gemini API Key ในหน้าโปรไฟล์/API เพื่อเรียกใช้งาน Gemini 2.5 Flash ได้โดยตรง</span>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-text">
+              <strong>ปุ่มตรวจสอบสถานะ Key</strong>
+              <span>กดปุ่มทดสอบเพื่อยืนยันว่า Key พร้อมใช้งาน และดูโควต้า RPM/RPD ได้ทันที</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="device-frame">
+        <iframe src="index.html#settings" title="Live App Settings"></iframe>
+        <div class="frame-caption">หน้าจอแอปจริง • ตั้งค่าโปรไฟล์และ API</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    let current = 0;
+
+    function renderSlide() {
+      slides.forEach((s, i) => s.classList.toggle('active', i === current));
+      document.getElementById('slideCounter').textContent = (current + 1) + ' / ' + slides.length;
+      document.getElementById('progressFill').style.width = (((current + 1) / slides.length) * 100) + '%';
+    }
+    function nextSlide() { if (current < slides.length - 1) { current++; renderSlide(); } }
+    function prevSlide() { if (current > 0) { current--; renderSlide(); } }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+      if (e.key === 'ArrowLeft') prevSlide();
+    });
+  </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'adaptive-fit-ai-v1';
+const CACHE_NAME = 'adaptive-fit-ai-v3';
 const PRECACHE_URLS = [
   './',
   './index.html',
